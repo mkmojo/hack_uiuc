@@ -47,8 +47,7 @@
     cursor: pointer;
 }
 
-.tt-suggestion .tt-cursor,
-.tt-suggestion:hover{
+.tt-suggestion .tt-cursor{
     color: #fff;
     background-color: #3498db;
 

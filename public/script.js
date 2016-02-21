@@ -29,7 +29,12 @@ var substringMatcher = function(strs) {
   };
 };
 
-$('#occupation-input .typeahead').typeahead({
+$('body').on("mouseover", ".tt-suggestion", function () {
+    $('.tt-suggestion').removeClass('tt-cursor');
+    $(this).addClass('tt-cursor');
+});
+
+$('#occupation-input.typeahead').typeahead({
   hint: true,
   highlight: true,
   minLength: 1
