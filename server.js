@@ -4,27 +4,25 @@ var http = require('http');
 var states = ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY', 'DC', 'AS', 'GU', 'MP', 'PR', 'UM', 'VI'];
 
 function getInfoFromIndeed(occu,  callback) {
-    for(state in states) {
-        var options = {
-            host: 'api.indeed.com',
-            port: 80,
-            path: '/ads/apisearch?publisher=7699004885042305&q='+ occu + '&l=' + state + '&sort=&radius=&st=&jt=&start=&limit=3000000&fromage=&filter=1&latlong=1&co=us&format=json&userip=1.2.3.4&useragent=Mozilla/%2F4.0%28Firefox%29&v=2'
-        };
+    var options = {
+        host: 'api.indeed.com',
+        port: 80,
+        path: '/ads/apisearch?publisher=7699004885042305&q='+ occu + '&l=&sort=&radius=&st=&jt=&start=&limit=3000000&fromage=&filter=1&latlong=1&co=us&format=json&userip=1.2.3.4&useragent=Mozilla/%2F4.0%28Firefox%29&v=2'
+    };
 
-        http.get(options, function(resp){
-            var res = "";
-            resp.setEncoding('utf8');
-            resp.on('data', function(chunk){
-                res += chunk;
-            }).on('end', function() {
-                // console.dir(res);
-                res = JSON.parse(res)["results"];
-                callback(res);
-            });
-        }).on("error", function(e){
-            console.log("Got error: " + e.message);
+    http.get(options, function(resp){
+        var res = "";
+        resp.setEncoding('utf8');
+        resp.on('data', function(chunk){
+            res += chunk;
+        }).on('end', function() {
+            // console.log(res);
+            res = JSON.parse(res)["results"];
+            callback(res);
         });
-    }
+    }).on("error", function(e){
+        console.log("Got error: " + e.message);
+    });
 
 }
 
@@ -42,7 +40,7 @@ function make_counts(entry) {
     counts[cnt_state] += 1;
 }
 
-function aggregator( last, callback, indeed_result ) {
+function aggregator( last, callback, indeed_result) {
     indeed_result.forEach( make_counts );
     if(last){
         callback();
@@ -53,7 +51,7 @@ function doSomething( job_id , callback) {
     var top_10 = id_2_top10[job_id];
     var i = 0;
     top_10.forEach( function(elem) {
-        getInfoFromIndeed(elem["occ_spouse"], aggregator.bind(undefined, (i==9), callback));
+        getInfoFromIndeed(elem["occ_spouse"], aggregator.bind(undefined, (i == 9), callback));
         i += 1;
     });
 }
@@ -75,7 +73,13 @@ app.get('/query', function(req, res) {
     console.log(job_id);
     doSomething(job_id, function() {
         var processed = processData(counts);
-        res.send(processed);
+        // console.log("DEBUG: " , processed);
+        try {
+            res.send(processed);
+        }
+        catch(e){
+            console.log(e);
+        }
     });
 });
 
@@ -83,7 +87,7 @@ app.use(express.static('public'));
 
 //respond with "hello world" when a GET request is made to the homepage
 
-var server = app.listen(8080, function () {
+var server = app.listen(8888, function () {
     var host = server.address().address;
     var port = server.address().port;
 });
