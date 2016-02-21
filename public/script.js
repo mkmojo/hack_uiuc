@@ -29,15 +29,7 @@ var substringMatcher = function(strs) {
   };
 };
 
-$('.twitter-typeahead')
-   .on('mouseenter', '.tt-suggestion', function(e){
-      $('.tt-cursor', $(this).closest('.tt-menu')).removeClass('tt-cursor');
-      $(this).addClass('tt-cursor');
-   })                  
-   .on('mouseleave', '.tt-menu', function(e){
-      $('.tt-cursor', $(this).closest('.tt-menu')).removeClass('tt-cursor');
-   });
-   
+
 $('#occupation-input .typeahead').typeahead({
   hint: true,
   highlight: true,
@@ -58,3 +50,12 @@ $("#job-input").keyup(function(e){
         })
     }
 });
+
+$('.twitter-typeahead')
+   .on('mouseenter', '.tt-suggestion', function(e){
+      $('.tt-cursor', $(this).closest('.tt-menu')).removeClass('tt-cursor');
+      $(this).addClass('tt-cursor');
+   })                  
+   .on('mouseleave', '.tt-suggestion', function(e){
+      $('.tt-cursor', $(this).closest('.tt-menu')).removeClass('tt-cursor');
+   });
