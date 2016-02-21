@@ -45,7 +45,7 @@ $("#job-input").keyup(function(e){
         var id = occ_2_jobid[job_desc];
         $.ajax({ url: "query?job_id=" + id  })
         .done( function(data)  {
-            console.log(data);
+            makeChart(data);
         })
     }
 });

@@ -57,6 +57,14 @@ function doSomething( job_id , callback) {
     });
 }
 
+function processData(data) {
+    var obj = [];
+    for( key in data ) {
+        obj.push({id: "US-"+key, value: data[key]});
+    }
+    return obj;
+}
+
 var express = require('express');
 var app = express();
 
@@ -65,7 +73,8 @@ app.get('/query', function(req, res) {
     console.log(req.query);
     console.log(job_id);
     doSomething(job_id, function() {
-        res.send(counts);
+        var processed = processData(counts);
+        res.send(processed);
     });
 });
 
