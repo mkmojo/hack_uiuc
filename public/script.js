@@ -29,12 +29,16 @@ var substringMatcher = function(strs) {
   };
 };
 
-$('body').on("mouseover", ".tt-suggestion", function () {
-    $('.tt-suggestion').removeClass('tt-cursor');
-    $(this).addClass('tt-cursor');
-});
-
-$('#occupation-input.typeahead').typeahead({
+$('.twitter-typeahead')
+   .on('mouseenter', '.tt-suggestion', function(e){
+      $('.tt-cursor', $(this).closest('.tt-menu')).removeClass('tt-cursor');
+      $(this).addClass('tt-cursor');
+   })                  
+   .on('mouseleave', '.tt-menu', function(e){
+      $('.tt-cursor', $(this).closest('.tt-menu')).removeClass('tt-cursor');
+   });
+   
+$('#occupation-input .typeahead').typeahead({
   hint: true,
   highlight: true,
   minLength: 1
