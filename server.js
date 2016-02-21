@@ -26,7 +26,7 @@ function getInfoFromIndeed(occu, callback) {
 }
 
 var jobid_2_occr = require('./occupations/occupations.json');
-var id_to_top10 = require('./occupations/pairs.json');
+var id_2_top10 = require('./occupations/pairs.json');
 
 
 var states = ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD', 'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ', 'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC', 'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY', 'DC', 'AS', 'GU', 'MP', 'PR', 'UM', 'VI'];
@@ -49,7 +49,7 @@ function aggregator( last, callback, indeed_result ) {
 }
 
 function doSomething( job_id , callback) {
-    var top_10 = id_to_top10[job_id];
+    var top_10 = id_2_top10[job_id];
     var i = 0;
     top_10.forEach( function(elem) {
         getInfoFromIndeed(elem["occ_spouse"], aggregator.bind(undefined, (i==9), callback));
@@ -60,10 +60,7 @@ function doSomething( job_id , callback) {
 var express = require('express');
 var app = express();
 
-app.use(express.static('public'));
-
-//respond with "hello world" when a GET request is made to the homepage
-app.get('/', function(req, res) {
+app.get('/query', function(req, res) {
     var job_id = req.query['job_id'];
     console.log(req.query);
     console.log(job_id);
@@ -72,6 +69,9 @@ app.get('/', function(req, res) {
     });
 });
 
+app.use(express.static('public'));
+
+//respond with "hello world" when a GET request is made to the homepage
 
 var server = app.listen(8080, function () {
     var host = server.address().address;
