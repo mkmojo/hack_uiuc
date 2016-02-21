@@ -1,8 +1,7 @@
 var $ = require('jquery');
 var http = require('http');
 
-//returns
-function getInfoFromIndeed(occu) {
+function getInfoFromIndeed(occu, callback) {
     var options = {
         host: 'api.indeed.com',
         port: 80,
@@ -15,15 +14,18 @@ function getInfoFromIndeed(occu) {
         resp.on('data', function(chunk){
             res += chunk;
         }).on('end', function() {
-            res = JSON.parse(res);
+            console.dir(res);
+            res = JSON.parse(res)["results"];
             //console.dir(res);
+            callback(res);
         });
     }).on("error", function(e){
         console.log("Got error: " + e.message);
     });
 }
 
-var jobid_2_occr = require('./occupations/occpuations.json');
+var jobid_2_occr = require('./occupations/occupations.json');
+var id_to_top10 = require('./occupations/pairs.json');
 
 console.log(jobid_2_occr["9110"]);
 
@@ -32,22 +34,22 @@ var states = ['AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA', 'HI', 
 //number of potential spouses in each state
 var counts = {};
 
-var indeed_responses = []
-for(job_id in hash) {
-    if(hash.hasOwnProperty(job_id)) {
-        getInfoFromIndeed(hash(job_id))
-    }
-}
-
-function make_top10_list(job_id) {
-    top10_list[job_id];
-}
-
-function make_counts(job_id) {
+function make_counts(entry) {
     var cnt_state = entry['state'];
     counts[cnt_state] += 1;
-    return counts;
 }
 
+function aggregator( indeed_result ) {
+    indeed_result.forEach( make_counts );
+}
+
+function doSomething(job_id) {
+    var top_10 = id_to_top10[job_id];
+    top_10.forEach( function(occupation_spouse) {
+        getInfoFromIndeed(occupation_spouse, aggregator);
+    });
+}
+
+doSomething("9110");
 
 
