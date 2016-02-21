@@ -5,8 +5,10 @@ function getInfoFromIndeed(occu, callback) {
     var options = {
         host: 'api.indeed.com',
         port: 80,
-        path: '/ads/apisearch?publisher=7699004885042305&q='+ occu + '&l=austin%2C+tx&sort=&radius=&st=&jt=&start=&limit=3000000&fromage=&filter=1&latlong=1&co=us&format=json&userip=1.2.3.4&useragent=Mozilla/%2F4.0%28Firefox%29&v=2'
+        path: '/ads/apisearch?publisher=7699004885042305&q='+ occu + '&l=&sort=&radius=&st=&jt=&start=&limit=3000000&fromage=&filter=1&latlong=1&co=us&format=json&userip=1.2.3.4&useragent=Mozilla/%2F4.0%28Firefox%29&v=2'
     };
+
+    console.log(options.path);
 
     http.get(options, function(resp){
         var res = "";
@@ -14,14 +16,14 @@ function getInfoFromIndeed(occu, callback) {
         resp.on('data', function(chunk){
             res += chunk;
         }).on('end', function() {
-            console.dir(res);
+            // console.dir(res);
             res = JSON.parse(res)["results"];
-            //console.dir(res);
             callback(res);
         });
     }).on("error", function(e){
         console.log("Got error: " + e.message);
     });
+
 }
 
 var jobid_2_occr = require('./occupations/occupations.json');
@@ -36,17 +38,23 @@ var counts = {};
 
 function make_counts(entry) {
     var cnt_state = entry['state'];
+    if (!counts[cnt_state])
+        counts[cnt_state] = 0;
     counts[cnt_state] += 1;
 }
 
-function aggregator( indeed_result ) {
+function aggregator( last, indeed_result ) {
     indeed_result.forEach( make_counts );
+    if(last)
+        console.log(counts);
 }
 
-function doSomething(job_id) {
+function doSomething( job_id ) {
     var top_10 = id_to_top10[job_id];
-    top_10.forEach( function(occupation_spouse) {
-        getInfoFromIndeed(occupation_spouse, aggregator);
+    var i = 0;
+    top_10.forEach( function(elem) {
+        getInfoFromIndeed(elem["occ_spouse"], aggregator.bind(undefined, (i==9)));
+        i += 1;
     });
 }
 
